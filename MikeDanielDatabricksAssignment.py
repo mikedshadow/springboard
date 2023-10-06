@@ -733,16 +733,21 @@ display(lrWeightsDF)
 # from: https://stackoverflow.com/questions/42935914/how-to-map-features-from-the-output-of-a-vectorassembler-back-to-the-column-name
 
 from itertools import chain
-model = lrCvModel
-transformed =  model.transform(trainingData)
+
 attrs = sorted(
-    (attr["idx"], attr["name"]) for attr in (chain(*transformed
+    (attr["idx"], attr["name"]) for attr in (chain(*lrCvModel.fit()
         .schema[lrCvModel.bestModel.summary.featuresCol]
         .metadata["ml_attr"]["attrs"].values())))
 
-lrCvFeatureCoefficients = pd.DataFrame([(name, lrCvModel.bestModel.coefficients[idx]) for idx, name in attrs],columns=['feature_name','feature_coefficient'])
+gbCvFeatureCoefficients = pd.DataFrame([(name, gbCvModel.bestModel.coefficients[idx]) for idx, name in attrs],columns=['feature_name','feature_coefficient'])
 
-print(lrCvFeatureCoefficients.sort_values(by=['feature_coefficient'],ascending =False))
+print(gbCvFeatureCoefficients.sort_values(by=['feature_coefficient'],ascending =False))
+
+# COMMAND ----------
+
+gbCvFeatureImportance = pd.DataFrame([(name, gbCvModel.bestModel.featureImportances[idx]) for idx, name in attrs],columns=['feature_name','feature_importance'])
+
+print(gbCvFeatureImportance.sort_values(by=['feature_importance'],ascending =False))
 
 # COMMAND ----------
 
